@@ -1,0 +1,4 @@
+en:
+  site_settings:
+    discourse_default_featured_topic_enabled: "Enable the default featured topic plugin"
+    discourse_default_featured_topic_category: "Choose the category for the default featured topic"

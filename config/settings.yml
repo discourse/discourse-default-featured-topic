@@ -1,0 +1,7 @@
+plugins:
+  discourse_default_featured_topic_enabled:
+    default: true
+    client: true
+  discourse_default_featured_topic_category:
+    type: category_list
+    default: ""
