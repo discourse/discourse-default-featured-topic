@@ -19,24 +19,33 @@ after_initialize do
                   DiscourseDefaultFeaturedTopic::PLUGIN_NAME,
                   use_new_show_route: true
 
-  require_dependency "user_profile"
+  add_to_serializer(:user_card, :featured_topic) do
+    # Default to the user's featured topic, if they have one set
+    if object.user_profile.featured_topic.present?
+      return(
+        BasicTopicSerializer.new(
+          object.user_profile.featured_topic,
+          scope: scope,
+          root: false,
+        ).as_json
+      )
+    end
 
-  module ::UserProfileDefaultFeaturedTopic
-    module UserProfileExtension
-      def featured_topic
-        self[:featured_topic].presence unless SiteSetting.discourse_default_featured_topic_category
+    # Don't show the default featured topic if the user is editing their profile
+    return if scope.request.referer.ends_with?("/u/#{object.username_lower}/preferences/profile")
 
-        self[:featured_topic].presence ||
-          Topic
-            .order(created_at: :desc)
-            .where(
-              category_id:
-                SiteSetting.discourse_default_featured_topic_category.split("|").map(&:to_i),
-            )
-            .find_by(user_id: user_id)
-      end
+    # No point trying to find a featured topic if there's no default category set
+    return if SiteSetting.discourse_default_featured_topic_category.blank?
+
+    topic =
+      Topic.order(created_at: :desc).find_by(
+        user_id: object.id,
+        category_id: SiteSetting.discourse_default_featured_topic_category,
+      )
+
+    # If we found a topic, and the user can see it, return it
+    if scope.can_see_topic?(topic)
+      BasicTopicSerializer.new(topic, scope: scope, root: false).as_json
     end
   end
-
-  UserProfile.prepend UserProfileDefaultFeaturedTopic::UserProfileExtension
 end

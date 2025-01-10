@@ -3,5 +3,5 @@ plugins:
     default: true
     client: true
   discourse_default_featured_topic_category:
-    type: category_list
+    type: category
     default: ""
