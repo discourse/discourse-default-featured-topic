@@ -32,7 +32,7 @@ after_initialize do
     end
 
     # Don't show the default featured topic if the user is editing their profile
-    return if scope.request.referer&.ends_with?("/u/#{object.username_lower}/preferences/profile")
+    return if scope.request&.referer&.ends_with?("/u/#{object.username_lower}/preferences/profile")
 
     # No point trying to find a featured topic if there's no default category set
     return if SiteSetting.discourse_default_featured_topic_category.blank?
