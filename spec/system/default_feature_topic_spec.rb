@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "Default Featured Topic", type: :system, js: true do
+describe "Default Featured Topic" do
   fab!(:user)
   fab!(:category)
   fab!(:topic) { Fabricate(:topic, user: user, category: category) }
